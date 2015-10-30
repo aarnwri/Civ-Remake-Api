@@ -15,6 +15,7 @@
 /log/*
 !/log/.keep
 /tmp
+/spec/examples.txt
 
 # Ignore mac related metadata
 .DS_Store
@@ -23,4 +24,3 @@
 /config/application.yml
 /config/secrets.yml
 /config/database.yml
-
