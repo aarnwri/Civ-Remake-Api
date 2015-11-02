@@ -8,9 +8,8 @@ module Tokenable
   end
 
   def set_token(column_name)
-    unless column_name.match(/token/)
-      raise "Method not being called on a token attribute"
-    end
+    ensure_column_setter
+
     token = self.class.generate_token
 
     until token_unique_to_column?(token, column_name)
@@ -21,13 +20,18 @@ module Tokenable
   end
 
   def nullify_token(column_name)
-    unless column_name.match(/token/)
-      raise "Method not being called on a token attribute"
-    end
+    ensure_column_setter
+
     self.send(column_name + "=", nil)
   end
 
   private
+
+  def ensure_column_setter (column_name)
+    unless self.respond_to?(column_name + "=")
+      raise "No setter for #{self.class}.#{column_name}... Be sure to use the correct column_name..."
+    end
+  end
 
   def token_unique_to_column?(token, column_name)
     query_hash = {}
