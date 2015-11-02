@@ -2,5 +2,5 @@ require 'rails_helper'
 
 RSpec.describe Session, type: :model do
 
-  it { should respond_to(:tokenrstrstsr) }
+  it { should respond_to(:token) }
 end
