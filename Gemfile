@@ -29,22 +29,18 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.3.3'                   # use rspec for testing
   gem 'factory_girl_rails', '~> 4.5.0'            # use factory girl for factories
   gem 'faker', '~> 1.5.0'                         # use faker for generating fake data
+  gem 'guard-rails', '~> 0.7.2', require: false   # use guard for automated testing
   gem 'guard-rspec', '~> 4.6.4', require: false   # use guard for automated testing
-  gem 'guard-rails', require: false
-  # gem 'spork-rails', '~> 4.0.0'                   # use spork to speed up guard
-  # gem 'guard-spork', '~> 2.1.0'                   # use guard-spork for automatic restarting
+  gem 'spring', '~> 1.4.0'                        # keep the application running in the background.
+  gem 'spring-commands-rspec', '~> 1.0.4'         # need this for guard/spring
+
+  gem 'rb-fsevent', '~> 0.9.6' if `uname` =~ /Darwin/ # for osx
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', '~> 6.0.2'                        # use byebug for debugger
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.2.1'
-
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring', '~> 1.4.0'
-  gem 'spring-commands-rspec'
-
-  # gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/ # for osx
 end
 
 group :doc do
