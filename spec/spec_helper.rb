@@ -1,5 +1,6 @@
 require 'config/database_cleaner'
 require 'config/factory_girl'
+require 'config/shoulda_matchers'
 
 # let's just require everything... why not...
 require 'support/headers'

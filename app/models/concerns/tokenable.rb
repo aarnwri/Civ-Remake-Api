@@ -7,8 +7,9 @@ module Tokenable
     end
   end
 
-  def set_token(column_name)
-    ensure_column_setter
+  def set_token (column_name)
+    column_name = column_name.to_s
+    ensure_column_setter(column_name)
 
     token = self.class.generate_token
 
@@ -19,7 +20,8 @@ module Tokenable
     self.send(column_name + "=", token)
   end
 
-  def nullify_token(column_name)
+  def nullify_token (column_name)
+    column_name = column_name.to_s
     ensure_column_setter
 
     self.send(column_name + "=", nil)
