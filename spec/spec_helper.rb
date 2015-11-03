@@ -1,3 +1,10 @@
+require 'config/database_cleaner'
+require 'config/factory_girl'
+
+# let's just require everything... why not...
+require 'support/headers'
+require 'support/request_helpers'
+
 #uncomment the following line to use spork with the debugger
 #require 'spork/ext/ruby-debug'
 
