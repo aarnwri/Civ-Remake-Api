@@ -1,6 +1,7 @@
 require 'rails_helper'
 require 'models/shared_examples/session_spec'
 require 'models/shared_examples/modules_spec'
+require 'models/helpers/session'
 
 RSpec.describe Session, type: :model do
 
@@ -39,8 +40,6 @@ RSpec.describe Session, type: :model do
     end
 
     context '#destroy_token' do
-      include_context 'session_crud'
-
       it 'should set the token attribute to nil' do
         setup_vars(:destroy_token)
 
