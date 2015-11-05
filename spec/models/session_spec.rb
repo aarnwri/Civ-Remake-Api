@@ -1,12 +1,10 @@
 require 'rails_helper'
+require 'models/shared_examples/session_spec'
+require 'models/shared_examples/modules_spec'
 
 RSpec.describe Session, type: :model do
 
-  # TODO: refactor this into a shared example
-  context 'tokenable' do
-    it { should respond_to(:set_token) }
-    it { should respond_to(:nullify_token) }
-  end
+  include_context 'include module Tokenable'
 
   context 'attributes' do
     it { should respond_to(:token) }
@@ -31,15 +29,24 @@ RSpec.describe Session, type: :model do
     # it { should validate_numericality_of(:user_id).only_integer.is_greater_than(0) }
   end
 
-  describe '#create_token' do
-    # TODO: fill this in
-  end
+  context 'methods' do
+    context '#create_token' do
+      include_examples 'create or update', 'create_token'
+    end
 
-  describe '#update_token' do
-    # TODO: fill this in
-  end
+    context '#update_token' do
+      include_examples 'create or update', 'update_token'
+    end
 
-  describe '#destroy_token' do
-    # TODO: fill this in
+    context '#destroy_token' do
+      include_context 'session_crud'
+
+      it 'should set the token attribute to nil' do
+        setup_vars(:destroy_token)
+
+        expect(@db_session.token).to be_nil
+        expect(@final_token == @initial_token).to eq(false)
+      end
+    end
   end
 end

@@ -22,7 +22,7 @@ module Tokenable
 
   def nullify_token (column_name)
     column_name = column_name.to_s
-    ensure_column_setter
+    ensure_column_setter(column_name)
 
     self.send(column_name + "=", nil)
   end
