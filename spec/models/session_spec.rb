@@ -3,6 +3,8 @@ require 'models/shared_examples/session_spec'
 require 'models/shared_examples/modules_spec'
 require 'models/helpers/session'
 
+require 'models/shared_examples_spec'
+
 RSpec.describe Session, type: :model do
 
   include_context 'include module Tokenable'
@@ -32,20 +34,15 @@ RSpec.describe Session, type: :model do
 
   context 'methods' do
     context '#create_token' do
-      include_examples 'create or update', 'create_token'
+      include_examples 'attribute_changed', :session, :token, :create_token, []
     end
 
     context '#update_token' do
-      include_examples 'create or update', 'update_token'
+      include_examples 'attribute_changed', :session, :token, :update_token, []
     end
 
     context '#destroy_token' do
-      it 'should set the token attribute to nil' do
-        setup_vars(:destroy_token)
-
-        expect(@db_session.token).to be_nil
-        expect(@final_token == @initial_token).to eq(false)
-      end
+      include_examples 'attribute_changed', :session, :token, :destroy_token, [], { desired_val: nil }
     end
   end
 end

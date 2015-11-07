@@ -2,13 +2,15 @@ def parse_response
   JSON.parse(response.body)
 end
 
-def expect_error_message(json, message)
+def expect_error_message (message)
+  json = parse_response
+
   expect(json.has_key?("errors")).to eq(true)
   expect(json["errors"]).to be_a Array
   expect(json["errors"]).to include(message)
 end
 
-def status_string(code)
+def status_string (code)
   case code
   when 200
     return "should yield status: 'ok' (200)"
@@ -28,5 +30,5 @@ def status_string(code)
 end
 
 def error_message_string
-  return "should return an appropriate error message in the JSON errors array"
+  return "should return proper error message in JSON errors array"
 end
