@@ -1,13 +1,10 @@
 require 'rails_helper'
-require 'models/shared_examples/session_spec'
-require 'models/shared_examples/modules_spec'
-require 'models/helpers/session'
-
-require 'models/shared_examples_spec'
 
 RSpec.describe Session, type: :model do
 
-  include_context 'include module Tokenable'
+  context 'modules' do
+    it('should include Tokenable') { expect(create(:session).class.ancestors.include?(Tokenable)).to be true }
+  end
 
   context 'attributes' do
     it { should respond_to(:token) }
@@ -34,11 +31,11 @@ RSpec.describe Session, type: :model do
 
   context 'methods' do
     context '#create_token' do
-      include_examples 'attribute_changed', :session, :token, :create_token, []
+      include_examples 'attribute_changed', :session, :token, :create_token
     end
 
     context '#update_token' do
-      include_examples 'attribute_changed', :session, :token, :update_token, []
+      include_examples 'attribute_changed', :session, :token, :update_token
     end
 
     context '#destroy_token' do

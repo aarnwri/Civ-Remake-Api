@@ -1,5 +1,5 @@
 def set_headers (options = {})
-  options = default_header_options.merge!(options)
+  options = default_header_options.merge(options)
 
   if options[:auth_type] == 'token'
     request.env['HTTP_AUTHORIZATION'] = "Token token=" + options[:token]

@@ -4,7 +4,9 @@ require 'config/shoulda_matchers'
 
 # let's just require everything... why not...
 require 'support/headers'
-require 'support/request_helpers'
+require 'support/requests'
+require 'support/shared_examples/models'
+require 'support/shared_examples/controllers'
 
 #uncomment the following line to use spork with the debugger
 #require 'spork/ext/ruby-debug'
@@ -29,6 +31,8 @@ require 'support/request_helpers'
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 RSpec.configure do |config|
+  config.alias_it_should_behave_like_to :it_responds_with, 'responds with:'
+  config.alias_it_should_behave_like_to :it_creates_successfully, 'creates successfully:'
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

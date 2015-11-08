@@ -1,12 +1,8 @@
 require 'rails_helper'
-require 'support/headers'
-
-require 'controllers/api/v1/shared_examples_spec'
-# require 'support/request_helpers'
 
 RSpec.describe Api::V1::SessionsController, type: :controller do
   let(:user) { create(:user) } # user's password is 'factory_foo!'
-  let(:credentials) { return { email: user.email, password: 'factory_foo!' } }
+  let(:credentials) { { email: user.email, password: 'factory_foo!' } }
 
   let(:session) { create(:session, user: user) }
 
@@ -14,36 +10,32 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
   context 'POST #create' do
     context 'params' do
-      context 'with invalid email or password' do
-        invalid_creds = [{ email: 'invalid@invalid.com' }, { password: 'changeme' }]
+      invalid_creds = [{ email: 'invalid@invalid.com' }, { password: 'changeme' }]
 
-        invalid_creds.each do |hash|
-          before { set_headers({auth_type: 'basic'}.merge(credentials).merge(hash)) }
+      invalid_creds.each do |hash|
+        context "with invalid #{hash.keys.first.to_s}" do
+          before(:each) { set_headers({auth_type: 'basic'}.merge(credentials).merge(hash)) }
 
-          include_examples 'require_status', 401
-          include_examples 'require_error_message', 'invalid email or password'
+          it_responds_with 'status_err', 401, 'invalid email or password'
         end
       end
 
       context 'passed in via json' do
-        before do
+        before(:each) do
           remove_auth_header
           post :create, credentials
         end
 
-        include_examples 'require_status', 422
-        include_examples 'require_error_message', 'must use headers for login'
+        it_responds_with 'status_err', 422, 'must use headers for login'
       end
     end
 
+    # TODO: finish this context
     context 'action' do
       context 'with valid email and password' do
-        before do
-          set_headers({auth_type: 'basic'}.merge(credentials))
-          post :create
-        end
+        before(:each) { set_headers({auth_type: 'basic'}.merge(credentials)) }
 
-        include_examples 'require_status', 201
+        it_responds_with 'status_created', :session
       end
     end
     it 'should require email and password' do
@@ -59,7 +51,7 @@ end
 
 # require 'rails_helper'
 # require 'support/headers'
-# require 'support/request_helpers'
+# require 'support/requests'
 #
 # RSpec.describe Api::V1::SessionsController, :type => :controller do
 #

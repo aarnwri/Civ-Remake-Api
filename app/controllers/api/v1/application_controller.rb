@@ -11,9 +11,9 @@ class Api::V1::ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   # TODO: remove this... it's only for testing...
-  before_action do
-    log_request_headers(:caps)
-  end
+  # before_action do
+  #   log_request_headers(:caps)
+  # end
   before_action :authenticate_user_by_token
 
   # TODO: write some specs for this behavior
