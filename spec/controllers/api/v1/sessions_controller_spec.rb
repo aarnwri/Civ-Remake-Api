@@ -8,43 +8,27 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
   before(:each) { set_headers(token: session.token) }
 
-  context 'POST #create' do
-    context 'params' do
-      invalid_creds = [{ email: 'invalid@invalid.com' }, { password: 'changeme' }]
+  include_context 'POST #create', {
+    model: :session
+  }
 
-      invalid_creds.each do |hash|
-        context "with invalid #{hash.keys.first.to_s}" do
-          before(:each) { set_headers({auth_type: 'basic'}.merge(credentials).merge(hash)) }
-
-          it_responds_with 'status_err', 401, 'invalid email or password'
-        end
-      end
-
-      context 'passed in via json' do
-        before(:each) do
-          remove_auth_header
-          post :create, credentials
-        end
-
-        it_responds_with 'status_err', 422, 'must use headers for login'
-      end
-    end
-
-    # TODO: finish this context
-    context 'action' do
-      context 'with valid email and password' do
-        before(:each) { set_headers({auth_type: 'basic'}.merge(credentials)) }
-
-        it_responds_with 'status_created', :session
-      end
-    end
-    it 'should require email and password' do
-
-    end
-    it 'should require the use of headers for the needed params' do
-      set_headers(token: 'invalid')
-    end
-  end
+  
+  #
+  #   # TODO: finish this context
+  #   context 'actions' do
+  #     context 'with valid email and password' do
+  #       before(:each) { set_headers({auth_type: 'basic'}.merge(credentials)) }
+  #
+  #       it_responds_with 'status_created', :session
+  #     end
+  #   end
+  #   it 'should require email and password' do
+  #
+  #   end
+  #   it 'should require the use of headers for the needed params' do
+  #     set_headers(token: 'invalid')
+  #   end
+  # end
 
 end
 

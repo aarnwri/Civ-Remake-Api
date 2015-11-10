@@ -5,13 +5,27 @@ end
 def require_error_message (message)
   json = parse_response
 
-  expect(json.has_key?("errors")).to eq(true)
+  expect(json.has_key?("errors")).to be true
   expect(json["errors"]).to be_a Array
   expect(json["errors"]).to include(message)
 end
 
 def require_status (code)
   expect(response.status).to eq(code)
+end
+
+def require_proper_update (model, params)
+
+end
+
+def require_proper_params (model, params)
+  expect(params.has_key?(model)).to be true
+  expect(params[model]).to be_a Hash
+end
+
+def modify_root_key (model, params)
+  params[:these_are_not_the_droids_youre_looking_for] = params[model]
+  params.delete(model)
 end
 
 def simulate_db_action (method, action, model, params)

@@ -32,7 +32,7 @@ require 'support/shared_examples/controllers'
 
 RSpec.configure do |config|
   config.alias_it_should_behave_like_to :it_responds_with, 'responds with:'
-  config.alias_it_should_behave_like_to :it_creates_successfully, 'creates successfully:'
+  config.alias_it_should_behave_like_to :except_with, 'except with:'
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
