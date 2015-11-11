@@ -4,6 +4,8 @@ require 'support/requests'
 require 'controllers/api/v1/shared_examples/sessions'
 
 RSpec.shared_context 'POST #create' do |options|
+  options.merge!({ method: 'post', action: 'create' })
+
   context 'POST #create' do
     include_context 'invalid_params', options
     include_context 'valid_params', options
@@ -20,6 +22,7 @@ RSpec.shared_context 'invalid_params' do |options|
     end
 
     include_context 'because_of_missing_root_key', options unless skip_context_because_of_missing_root_key
+    include_context 'each_invalid_param', options
   end
 end
 
@@ -27,26 +30,37 @@ end
 RSpec.shared_context 'because_of_missing_root_key' do |options|
   if options[:params].present?
     before(:each) do
-      params = options[:params][:model]
-      simulate_db_action(:method, :action, :model, params)
+      params = options[:params][options[:model]]
+      simulate_db_action(options[:method], options[:action], options[:model], params)
     end
 
     include_examples 'status_err', 422, "root key for #{model} required"
   end
 end
 
-# options should contain :model, :params, :method, :action, :invalid_param_cases
+# options should contain :model, :params, :method, :action, :bad_params
 RSpec.shared_context 'each_invalid_param' do |options|
-  options[:invalid_param_cases].each do |param_hash, error_message|
-    context "because of #{param_hash.keys.first.to_s}" do
+  options[:bad_params].each do |hash|
+    context "because #{hash.keys.first.to_s} #{hash[:reason]}" do
       before(:each) do
-        params = options[:params].merge(param_hash)
-        simulate_db_action(:method, :action, :model, params)
+        invalid_param_hash = { hash.keys.first => hash.values.first }
+        params = valid_params
+        params[options[:model]].merge!(param_hash)
+
+        simulate_db_action(options[:method], options[:action], options[:model], params)
       end
 
-      include_examples 'status_err', 422, error_message
+      include_examples 'status_err', (options[:bad_param_status_override] || 422), hash[:message]
     end
   end
+end
+
+# TODO: merge this in with invalid params... (include the context somehow...)
+RSpec.shared_examples 'status_not_created' do |options|
+  before(:each) { simulate_db_action(:post, :create, model, params) }
+
+  include_examples 'status code and error message', status_code, message
+  it('should not have plus one in the db') { expect(@final_count).to eq(@initial_count)}
 end
 
 RSpec.shared_context 'valid_params' do |options|

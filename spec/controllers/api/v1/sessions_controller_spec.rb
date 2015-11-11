@@ -1,18 +1,30 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::SessionsController, type: :controller do
+
   let(:user) { create(:user) } # user's password is 'factory_foo!'
   let(:credentials) { { email: user.email, password: 'factory_foo!' } }
 
   let(:session) { create(:session, user: user) }
+  let(:valid_params) { { session: credentials } }
 
   before(:each) { set_headers(token: session.token) }
 
   include_context 'POST #create', {
-    model: :session
+    model: :session,
+    bad_param_status_override: 401,
+    bad_params: [
+      { email: "mal_formatted...",
+        reason: "improperly formatted",
+        message: "invalid email or password"
+      },
+      { password: "2short",
+        reason: "improperly formatted",
+        message: "invalid email or password"
+      }
+    ],
   }
 
-  
   #
   #   # TODO: finish this context
   #   context 'actions' do
