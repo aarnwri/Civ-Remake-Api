@@ -6,13 +6,23 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
   let(:credentials) { { email: user.email, password: 'factory_foo!' } }
 
   let(:session) { create(:session, user: user) }
-  let(:valid_params) { { session: credentials } }
+  # let(:valid_create_params) { { session: credentials } }
+  let(:valid_update_params) { { session: { id: session.id } } }
+  let(:valid_destroy_params) { { session: { id: session.id } } }
+
+  def self.valid_create_params
+    @user = FactoryGirl.create(:user)
+    @session = FactoryGirl.create(:session, user: @user)
+
+    { session: { email: @user.email, password: 'factory_foo!' } }
+  end
 
   before(:each) { set_headers(token: session.token) }
 
   include_context 'POST #create', {
     model: :session,
     bad_param_status_override: 401,
+    params: ,
     bad_params: [
       { email: "mal_formatted...",
         reason: "improperly formatted",

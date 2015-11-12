@@ -12,6 +12,24 @@ RSpec.shared_context 'POST #create' do |options|
   end
 end
 
+RSpec.shared_context 'PUT #update' do |options|
+  options.merge!({ method: 'put', action: 'update' })
+
+  context 'PUT #update' do
+    include_context 'invalid_params', options
+    include_context 'valid_params', options
+  end
+end
+
+RSpec.shared_context 'DELETE #destroy' do |options|
+  options.merge!({ method: 'delete', action: 'destroy' })
+
+  context 'DELETE #destroy' do
+    include_context 'invalid_params', options
+    include_context 'valid_params', options
+  end
+end
+
 RSpec.shared_context 'invalid_params' do |options|
   context 'with invalid params' do
     if options[:model] == :session
@@ -45,9 +63,19 @@ RSpec.shared_context 'each_invalid_param' do |options|
       before(:each) do
         invalid_param_hash = { hash.keys.first => hash.values.first }
         params = valid_params
-        params[options[:model]].merge!(param_hash)
+        params[options[:model]].merge!(invalid_param_hash)
 
         simulate_db_action(options[:method], options[:action], options[:model], params)
+      end
+      case options[:action]
+      when :create
+        it('should not have plus one in the db') { expect(@final_count).to eq(@initial_count) }
+      when :update
+        # TODO: make sure to check that params are still the same in the db
+        it('should have same count in the db') { expect(@final_count).to eq(@initial_count) }
+      when :destroy
+        # TODO: make sure the correct object is still in the db (if possible)
+        it('should not have minus one in the db') { expect(@final_count).to eq(@initial_count) }
       end
 
       include_examples 'status_err', (options[:bad_param_status_override] || 422), hash[:message]
@@ -55,13 +83,13 @@ RSpec.shared_context 'each_invalid_param' do |options|
   end
 end
 
-# TODO: merge this in with invalid params... (include the context somehow...)
-RSpec.shared_examples 'status_not_created' do |options|
-  before(:each) { simulate_db_action(:post, :create, model, params) }
-
-  include_examples 'status code and error message', status_code, message
-  it('should not have plus one in the db') { expect(@final_count).to eq(@initial_count)}
-end
+# TODO: make sure the correct object is still in the db (if possible)
+# RSpec.shared_examples 'status_not_deleted' do |status_code, message, model, params|
+#   before(:each) { simulate_db_action(:put, :update, model, params) }
+#
+#   include_examples 'status code and error message', status_code, message
+#   it('should not have minus one in the db') { expect(@final_count).to eq(@initial_count) }
+# end
 
 RSpec.shared_context 'valid_params' do |options|
   context 'with valid params' do
