@@ -85,7 +85,13 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
   end
 
   context 'DELETE #destroy' do
-    it 'should have some examples here...'
+    # valid json params implies that the session id in json is the same as that found via the valid token
+    it 'with valid token: sent via headers: with valid json params: should set the token to nil'
+    it 'with valid token: sent via headers: with valid json params: should not create or destroy a session'
+    it 'with valid token: sent via headers: with valid json params: should return status 204'
+    it 'with valid token: sent via headers: with valid json params: should not return any json (no body)'
+
+    it 'with valid token: sent via headers: with invalid json params: (TODO: FINISH THIS)'
   end
 
 end
