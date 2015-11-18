@@ -17,8 +17,8 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       context 'sent via json' do
         include_context "removed_auth_header"
         before(:each) do
-          @db_count = Session.all.count
           json_params = { session: credentials }
+          @db_count = Session.all.count
           post :create, json_params
         end
 
@@ -85,15 +85,75 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
   end
 
   context 'DELETE #destroy' do
-    # valid json params implies that the session id in json is the same as that found via the valid token
-    it 'with valid token: sent via headers: with valid json params: should set the token to nil'
-    it 'with valid token: sent via headers: with valid json params: should not create or destroy a session'
-    it 'with valid token: sent via headers: with valid json params: should return status 204'
-    it 'with valid token: sent via headers: with valid json params: should not return any json (no body)'
+    let(:user) { create(:user) }
+    let!(:session) { create(:session, user: user) }
 
-    it 'with valid token: sent via headers: with invalid json params: (TODO: FINISH THIS)'
+    context 'with invalid token' do
+      context 'because it was sent via json' do
+        include_context "removed_auth_header"
+
+        before(:each) do
+          @params = { session: { token: session.token, id: session.id } }.to_json
+          @db_count = Session.all.count
+          delete :destroy, @params, id: session.id
+        end
+
+        include_context 'expect_same_db_count', :session
+        include_context 'expect_same_db_attrs', :session
+        include_context 'expect_json_error_message', 'token authentication failed'
+        include_context 'expect_status_code', 401
+      end
+
+      context 'because it does not exist' do
+        before(:each) do
+          set_headers(token: "invalid")
+          @db_count = Session.all.count
+          delete :destroy, id: session.id
+        end
+
+        include_context 'expect_same_db_count', :session
+        include_context 'expect_same_db_attrs', :session
+        include_context 'expect_json_error_message', 'token authentication failed'
+        include_context 'expect_status_code', 401
+      end
+    end
+
+    context 'with valid token' do
+      before(:each) { set_headers(token: session.token) }
+
+      context 'and valid json params' do
+        before(:each) { @params = { session: { id: session.id } }.to_json }
+
+        it 'should set the token to nil'
+        it 'should not create or destroy a session'
+        it 'should return status 204'
+        it 'should not return any json (no body)'
+      end
+
+      context 'and invalid json params' do
+        context 'because session id belongs to another user' do
+          it 'should not alter the session'
+          it 'should not create or destroy a session'
+          it 'should return status 403'
+          it 'should return error message cannot logout another user'
+        end
+
+        context 'because root key is missing' do
+          it 'should not alter the session'
+          it 'should not create or destroy a session'
+          it 'should return status 422'
+          it 'should return error message root key is missing'
+        end
+
+        context 'because session id does not exist' do
+          it 'should not alter the session'
+          it 'should not create or destroy a session'
+          it 'should return status 422'
+          it 'should return error message session not found'
+        end
+      end
+    end
   end
-
 end
 
 

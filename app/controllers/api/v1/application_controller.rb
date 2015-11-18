@@ -18,6 +18,7 @@ class Api::V1::ApplicationController < ActionController::Base
 
   # TODO: write some specs for this behavior
   rescue_from(ActionController::ParameterMissing) do |parameter_missing_exception|
+    puts "rescued from ParameterMissing exception"
     error = parameter_missing_exception.param.to_s.capitalize + ' parameter is required'
     render json: { errors: [error] }.to_json, status: :unprocessable_entity
   end

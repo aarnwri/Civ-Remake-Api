@@ -20,7 +20,7 @@ def set_headers (options = {})
 end
 
 def remove_auth_header
-  request.env['HTTP_AUTHORIZATION']
+  request.env['HTTP_AUTHORIZATION'] = nil
 end
 
 def default_header_options

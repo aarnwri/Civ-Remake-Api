@@ -21,6 +21,11 @@ class Api::V1::SessionsController < Api::V1::ApplicationController
     end
   end
 
+  def destroy
+    puts "in destroy action"
+    puts "session count: #{Session.all.count}"
+  end
+
   # def create
   #   clean_http_basic_params
   #   user = User.find_by(email: login_params[:email])
