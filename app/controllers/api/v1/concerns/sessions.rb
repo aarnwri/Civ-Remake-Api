@@ -1,8 +1,10 @@
 module Api::V1::Sessions
   def authenticate_user_by_token
     if request_has_api_token? && session_exists?
+      # puts "request has api token and session exists"
       set_current_user
     else
+      # puts "failing authentication"
       fail_authentication
     end
   end

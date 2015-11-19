@@ -6,6 +6,7 @@ gem 'rails', '4.2.3'  # for edge Rails instead: gem 'rails', github: 'rails/rail
 gem 'pg', '~> 0.18.3'         # use postgresql as the database for Active Record
 gem 'bcrypt', '~> 3.1.7'      # use bcrypt for encryption (passwords, etc.)
 gem 'jbuilder', '~> 2.3.2'    # use jbuilder for building json representations
+gem 'colorize', '~> 0.7.7'    # use colorize for adding color to strings
 
 # in case we do use any rails ui elements
 gem 'sass-rails', '~> 5.0'          # use SCSS for stylesheets
