@@ -22,35 +22,20 @@ class Api::V1::SessionsController < Api::V1::ApplicationController
   end
 
   def destroy
-    puts "in destroy action"
-    puts "session count: #{Session.all.count}"
+    session_to_destroy = Session.find_by(id: params[:id])
+    if session_to_destroy.nil?
+      render json: {
+        "errors": ["session not found"]
+      }.to_json, status: :unprocessable_entity
+    elsif session_to_destroy.id == @session.id
+      session_to_destroy.destroy_token
+      head :no_content
+    else
+      render json: {
+        "errors": ["cannot logout another user"]
+      }.to_json, status: :forbidden
+    end
   end
-
-  # def create
-  #   clean_http_basic_params
-  #   user = User.find_by(email: login_params[:email])
-  #
-  #   if user && user.authenticate(login_params[:password])
-  #     api_token = user.session.set_token_with_options(is_api_token: true)
-  #     render json: {
-  #       "status": "success",
-  #       "user": {
-  #         "email": user.email,
-  #         "name": user.name,
-  #         "phone_number": user.phone_number,
-  #         "organization": user.organization,
-  #       },
-  #       "session": {
-  #         "token": api_token
-  #       }
-  #     }.to_json, status: :created
-  #   else
-  #     render json: {
-  #       "status": "failed",
-  #       "errors": ["not authorized"]
-  #     }.to_json, status: :unauthorized
-  #   end
-  # end
 
   private
 

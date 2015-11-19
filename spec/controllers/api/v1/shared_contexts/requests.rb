@@ -8,10 +8,6 @@ end
 
 RSpec.shared_context 'expect_same_db_count' do |model|
   it 'should not create or delete a db object' do
-    # puts "session_count: #{Session.all.count}"
-    # puts "model.to_s.camelize.constantize: #{model.to_s.camelize.constantize}"
-    # puts "model.to_s.camelize.constantize.all: #{model.to_s.camelize.constantize.all}"
-    # puts "model.to_s.camelize.constantize.all.count: #{model.to_s.camelize.constantize.all.count}"
     expect(model.to_s.camelize.constantize.all.count).to eq(@db_count)
   end
 end
