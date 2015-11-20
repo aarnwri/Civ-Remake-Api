@@ -11,6 +11,7 @@ class Api::V1::SessionsController < Api::V1::ApplicationController
       # TODO: fix this to use jbuilder
       render json: {
         session: {
+          id: user.session.id,
           token: user.session.token
         }
       }.to_json, status: :created
