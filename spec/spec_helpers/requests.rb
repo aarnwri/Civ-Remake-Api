@@ -5,6 +5,7 @@ end
 ##########################
 ### it string builders ###
 ##########################
+
 def status_test_str (code)
   should_str = "should respond with status code:"
   case code
@@ -32,6 +33,31 @@ end
 ###########################
 ### expectation helpers ###
 ###########################
+
+def validate_json_with_hash (hash, json = parse_json_response, json_path = nil)
+  json_path ||= ""
+
+  present_keys_count = 0
+  hash.keys.each do |key|
+    if eval("json#{json_path}").has_key?(key.to_s)
+      present_keys_count += 1
+    else
+      raise "json#{json_path} missing key: #{key.to_s}"
+    end
+
+    if hash[key].instance_of?(Hash)
+      new_json_path = json_path + "[\"#{key.to_s}\"]"
+      validate_json_with_hash(hash[key], json, new_json_path)
+    else
+      expect(eval("json#{json_path}[\"#{key.to_s}\"]")).to be_a hash[key]
+    end
+  end
+
+  if present_keys_count < eval("json#{json_path}").keys.count
+    raise "json#{json_path} returned keys that shouldn't exist"
+  end
+end
+
 def expect_json_error_message (message)
   json = parse_json_response
 

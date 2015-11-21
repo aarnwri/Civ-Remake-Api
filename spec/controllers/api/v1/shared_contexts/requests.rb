@@ -1,14 +1,44 @@
-RSpec.shared_context 'expect_status_code' do |code|
-  it(status_test_str(code)) { expect_status(code) }
+RSpec.shared_context 'expect_valid_json' do |validation_hash|
+  it "should return valid json" do
+    validate_json_with_hash(validation_hash)
+  end
 end
 
 RSpec.shared_context 'expect_json_error_message' do |message|
   it(json_em_test_str(message)) { expect_json_error_message(message) }
 end
 
-RSpec.shared_context 'expect_same_db_count' do |model|
-  it 'should not create or delete a db object' do
-    expect(model.to_s.camelize.constantize.all.count).to eq(@db_count)
+RSpec.shared_context 'expect_status_code' do |code|
+  it(status_test_str(code)) { expect_status(code) }
+end
+
+RSpec.shared_context 'expect_same_db_count' do |*models|
+  models.each do |model|
+    klass = model.to_s.camelize.constantize
+
+    it "should not create or delete a #{klass} object" do
+      expect(klass.all.count).to eq(eval("@#{model.to_s}_count"))
+    end
+  end
+end
+
+RSpec.shared_context 'expect_plus_one_db_count' do |*models|
+  models.each do |model|
+    klass = model.to_s.camelize.constantize
+
+    it "should not create or delete a #{klass} object" do
+      expect(klass.all.count).to eq(eval("@#{model.to_s}_count") + 1)
+    end
+  end
+end
+
+RSpec.shared_context 'expect_minus_one_db_count' do |*models|
+  models.each do |model|
+    klass = model.to_s.camelize.constantize
+
+    it "should not create or delete a #{klass} object" do
+      expect(klass.all.count).to eq(eval("@#{model.to_s}_count") - 1)
+    end
   end
 end
 
@@ -18,39 +48,5 @@ RSpec.shared_context 'expect_same_db_attrs' do |model|
     created_attrs = self.send(model).attributes
 
     expect(db_attrs).to eq(created_attrs)
-  end
-end
-
-# This test assumes that the credentials are of a valid format
-RSpec.shared_context 'invalid_credentials' do
-  invalid_creds = [
-    { email: 'invalid@invalid.com',
-      reason: "can't be found"
-    },
-    { password: 'changeme',
-      reason: "is wrong"
-    },
-    { email: 'malformed',
-      reason: "is incorrectly formatted"
-    },
-    { password: '2short',
-      reason: "is incorrectly formatted"
-    },
-  ]
-
-  invalid_creds.each do |hash|
-    context "because #{hash.keys.first.to_s} #{hash[:reason]}" do
-      before(:each) do
-        @db_count = Session.all.count
-
-        invalid_param_hash = { hash.keys.first => hash.values.first }
-        set_headers({ basic: credentials.merge(invalid_param_hash) })
-        post :create
-      end
-
-      include_context 'expect_same_db_count', :session
-      include_context 'expect_status_code', 401
-      include_context 'expect_json_error_message', 'invalid email or password'
-    end
   end
 end
