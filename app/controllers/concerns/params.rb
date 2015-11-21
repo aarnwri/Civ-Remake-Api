@@ -1,4 +1,4 @@
-module Api::V1::Params
+module Params
   def clean_http_basic_params
     if request.headers['Authorization'].nil?
       render json: { errors: ["authorization header is missing"] }.to_json, status: :unprocessable_entity
