@@ -17,7 +17,7 @@ RSpec.shared_context 'expect_same_db_count' do |*models|
     klass = model.to_s.camelize.constantize
 
     it "should not create or delete a #{klass} object" do
-      expect(klass.all.count).to eq(eval("@#{model.to_s}_count"))
+      expect(klass.all.count).to eq(eval("@initial_#{model.to_s}_count"))
     end
   end
 end
@@ -26,8 +26,8 @@ RSpec.shared_context 'expect_plus_one_db_count' do |*models|
   models.each do |model|
     klass = model.to_s.camelize.constantize
 
-    it "should not create or delete a #{klass} object" do
-      expect(klass.all.count).to eq(eval("@#{model.to_s}_count") + 1)
+    it "should create a #{klass} object" do
+      expect(klass.all.count).to eq(eval("@initial_#{model.to_s}_count") + 1)
     end
   end
 end
@@ -36,8 +36,8 @@ RSpec.shared_context 'expect_minus_one_db_count' do |*models|
   models.each do |model|
     klass = model.to_s.camelize.constantize
 
-    it "should not create or delete a #{klass} object" do
-      expect(klass.all.count).to eq(eval("@#{model.to_s}_count") - 1)
+    it "should remove a #{klass} object" do
+      expect(klass.all.count).to eq(eval("@initial_#{model.to_s}_count") - 1)
     end
   end
 end
