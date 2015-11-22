@@ -1,4 +1,4 @@
-module Api::V1::Sessions
+module Sessions
   def authenticate_user_by_token
     if request_has_api_token? && session_exists?
       # puts "request has api token and session exists"

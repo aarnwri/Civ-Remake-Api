@@ -1,9 +1,11 @@
 require 'rails_helper'
 
+require 'models/shared_contexts/attributes'
+
 RSpec.describe Session, type: :model do
 
   context 'modules' do
-    it('should include Tokenable') { expect(create(:session).class.ancestors.include?(Tokenable)).to be true }
+    it('should include Tokenable') { expect(create(:session).class.ancestors).to include(Tokenable) }
   end
 
   context 'attributes' do
@@ -31,15 +33,15 @@ RSpec.describe Session, type: :model do
 
   context 'methods' do
     context '#create_token' do
-      include_examples 'attribute_changed', :session, :token, :create_token
+      include_context 'attribute_changed', :session, :token, :create_token
     end
 
     context '#update_token' do
-      include_examples 'attribute_changed', :session, :token, :update_token
+      include_context 'attribute_changed', :session, :token, :update_token
     end
 
     context '#destroy_token' do
-      include_examples 'attribute_changed', :session, :token, :destroy_token, [], { desired_val: nil }
+      include_context 'attribute_changed', :session, :token, :destroy_token, [], { desired_val: nil }
     end
   end
 end
