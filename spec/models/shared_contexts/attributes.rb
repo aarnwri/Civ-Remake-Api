@@ -6,7 +6,7 @@
 #   :current_val => indicates what the value should be upon creation
 #   :desired_val => indicates what the attribute should change to
 #   :factory_hash => indicates factory overrides for the model creation process
-RSpec.shared_examples 'attribute_changed' do |model, attribute, method, params, options|
+RSpec.shared_context 'attribute_changed' do |model, attribute, method, params, options|
 
   options ||= {}
 

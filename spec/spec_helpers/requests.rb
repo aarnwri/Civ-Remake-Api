@@ -37,6 +37,7 @@ end
 # hash here needs to be a specific format as follows...
 # { key_name: value_type, key_name: { ... }, ..., key_name: value_type }
 # ex: { session: { id: Fixnum, token: String } }
+# TODO: this method does not support validation of hashes contained in Arrays
 def validate_json_with_hash (hash, json = parse_json_response, json_path = nil)
   json_path ||= ""
 
