@@ -37,6 +37,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           },
           session: {
             id: Fixnum,
+            user_id: Fixnum,
             token: String
           }
         }

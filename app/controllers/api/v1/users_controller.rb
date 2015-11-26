@@ -20,6 +20,7 @@ class Api::V1::UsersController < Api::V1::ApplicationController
           },
           session: {
             id: session.id,
+            user_id: user.id,
             token: session.token
           }
         }.to_json, status: :created
