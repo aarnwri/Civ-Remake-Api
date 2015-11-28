@@ -6,11 +6,12 @@ RSpec.describe Game, type: :model do
   end
 
   context 'relationships' do
+    it { should belong_to(:creator).class_name('User') }
     it { should have_many(:players) }
     it { should have_many(:users).through(:players) }
   end
 
   context 'validations' do
-    # none yet but I'm sure there will be...
+    it { should validate_length_of(:name).is_at_most(50) }
   end
 end

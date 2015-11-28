@@ -1,0 +1,126 @@
+require 'rails_helper'
+
+require 'spec_helpers/requests'
+require 'spec_helpers/headers'
+
+require 'controllers/api/v1/shared_contexts/requests'
+
+RSpec.describe Api::V1::GamesController, type: :controller do
+
+  context 'POST #create' do
+    let(:user) { create(:user) }
+    let(:session) { create(:session, user: user) }
+
+    context 'with valid token' do
+      before(:each) { set_headers(token: session.token) }
+
+      context 'with valid params' do
+        before(:each) do
+          @initial_game_count = Game.all.count
+          @initial_player_count = Player.all.count
+          @initial_games = Game.all.to_a
+          @initial_players = Player.all.to_a
+          post :create, { game: attributes_for(:game) }
+        end
+
+        include_context 'expect_plus_one_db_count', :game, :player
+        include_context 'expect_status_code', 201
+        it 'should have the new player belonging to the user' do
+          new_player = (Player.all.to_a - @initial_players).first
+          expect(new_player.user).to eq(user)
+        end
+        it 'should have the new player belonging to the game' do
+          new_player = (Player.all.to_a - @initial_players).first
+          new_game = (Game.all.to_a - @initial_games).first
+          expect(new_player.game).to eq(new_game)
+        end
+        it 'should belong to the current user' do
+          new_game = (Game.all.to_a - @initial_games).first
+          expect(new_game.creator).to eq(user)
+        end
+        include_context 'expect_valid_json', {
+          data: { id: Fixnum, type: 'game',
+            attributes: {
+              name: String
+            },
+            relationships: {
+              players: {
+                data: [
+                  { id: Fixnum, type: 'player' }
+                ]
+              }
+            }
+          },
+          included: [ {
+            id: Fixnum,
+            type: 'player',
+            attributes: {
+              user_id: Fixnum,
+              game_id: Fixnum
+            }
+          } ]
+        }
+      end
+
+      invalid_attributes = [
+        { name: "x" * 51,
+          reason: "is too long",
+          error: "Name is too long (maximum is 50 characters)"
+        }
+      ]
+
+      invalid_attributes.each do |hash|
+        context "because #{hash.keys.first.to_s} #{hash[:reason]}" do
+          before(:each) do
+            @initial_game_count = Game.all.count
+            @initial_player_count = Player.all.count
+            @initial_games = Game.all.to_a
+            @initial_players = Player.all.to_a
+
+            invalid_param_hash = { hash.keys.first => hash.values.first }
+
+            post :create, { game: attributes_for(:game).merge(invalid_param_hash) }
+          end
+
+          include_context 'expect_same_db_count', :game, :player
+          include_context 'expect_status_code', 422
+          include_context 'expect_json_error_message', "#{hash[:error]}"
+        end
+      end
+
+      # context 'with invalid params' do
+      #   context 'because name is too long' do
+      #     before(:each) do
+      #       @initial_game_count = Game.all.count
+      #       @initial_player_count = Player.all.count
+      #       @initial_games = Game.all.to_a
+      #       @initial_players = Player.all.to_a
+      #       post :create, { game: attributes_for(:game, name: "x" * 51) }
+      #     end
+      #
+      #     include_context 'expect_same_db_count', :game, :player
+      #     include_context 'expect_json_error_message', 'token authentication failed'
+      #     include_context 'expect_status_code', 401
+      #   end
+      # end
+    end
+
+    context 'with invalid token' do
+      before(:each) { set_headers(token: "gibberish") }
+
+      context 'even with valid params' do
+        before(:each) do
+          @initial_game_count = Game.all.count
+          @initial_player_count = Player.all.count
+          @initial_games = Game.all.to_a
+          @initial_players = Player.all.to_a
+          post :create, { game: attributes_for(:game) }
+        end
+
+        include_context 'expect_same_db_count', :game, :player
+        include_context 'expect_json_error_message', 'token authentication failed'
+        include_context 'expect_status_code', 401
+      end
+    end
+  end
+end

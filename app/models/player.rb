@@ -1,5 +1,8 @@
 class Player < ActiveRecord::Base
 
+  # This is a join model between users and games since a user has many games and
+  # a game has many users.
+
   belongs_to :user
   belongs_to :game
 

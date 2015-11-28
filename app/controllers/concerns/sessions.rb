@@ -29,6 +29,10 @@ module Sessions
       @current_user = @session.user
     end
 
+    def current_user
+      @current_user
+    end
+
     def fail_authentication
       render json: { errors: ["token authentication failed"] }.to_json, status: :unauthorized
     end
