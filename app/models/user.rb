@@ -4,6 +4,9 @@ class User < ActiveRecord::Base
 
   has_one :session, dependent: :destroy
 
+  has_many :players
+  has_many :games, through: :players
+
   has_secure_password
   validates :password, {
     length: { minimum: 8, message: "is too short (minimum is 8 characters)" },

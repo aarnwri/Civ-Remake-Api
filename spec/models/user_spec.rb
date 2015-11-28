@@ -21,6 +21,8 @@ RSpec.describe User, :type => :model do
 
   context 'relationships' do
     it { should have_one(:session) }
+    it { should have_many(:players) }
+    it { should have_many(:games).through(:players) }
 
     context 'when destroyed' do
       it 'should destroy its session' do
@@ -30,6 +32,10 @@ RSpec.describe User, :type => :model do
         @user.destroy
         expect { Session.find(@session.id) }.to raise_error(ActiveRecord::RecordNotFound)
       end
+
+      # NOTE: I don't think we should delete players in case any game data is tied to the players.
+      # The game should be able to continue after a player has left the game.
+      it 'should archive its players'
     end
   end
 

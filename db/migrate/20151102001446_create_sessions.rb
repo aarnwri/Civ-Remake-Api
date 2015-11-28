@@ -1,10 +1,8 @@
 class CreateSessions < ActiveRecord::Migration
   def change
-    create_table :sessions do |t|
-      # belongs_to
-      t.integer :user_id
+    create_table :sessions do |t|      
+      t.integer :user_id    # belongs_to User
 
-      # attributes
       t.string :token
 
       t.timestamps null: false
