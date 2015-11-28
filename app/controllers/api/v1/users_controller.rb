@@ -13,16 +13,27 @@ class Api::V1::UsersController < Api::V1::ApplicationController
         session = Session.create(user: user)
         session.create_token
 
+        # TODO: clean this up using jbuilder...
         render json: {
-          user: {
+          data: {
             id: user.id,
-            email: user.email
+            type: 'user',
+            attributes: {
+              email: user.email
+            },
+            relationships: {
+              session: {
+                data: { id: session.id, type: 'session' }
+              }
+            }
           },
-          session: {
+          included: [ {
             id: session.id,
-            user_id: user.id,
-            token: session.token
-          }
+            type: 'session',
+            attributes: {
+              token: session.token
+            }
+          } ]
         }.to_json, status: :created
       else
         render json: { errors: user.errors.full_messages }.to_json, status: :unprocessable_entity

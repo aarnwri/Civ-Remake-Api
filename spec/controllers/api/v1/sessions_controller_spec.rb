@@ -41,10 +41,23 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
           end
 
           include_context 'expect_valid_json', {
-            session: {
+            data: { id: Fixnum, type: 'session',
+              attributes: {
+                token: String
+              },
+              relationships: {
+                user: {
+                  data: { id: Fixnum, type: 'user' }
+                }
+              }
+            },
+            included: [ {
               id: Fixnum,
-              token: String
-            }
+              type: 'user',
+              attributes: {
+                email: String,
+              }
+            } ]
           }
           include_context 'expect_same_db_count', :session
           include_context 'expect_status_code', 201
@@ -64,10 +77,23 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
           end
 
           include_context 'expect_valid_json', {
-            session: {
+            data: { id: Fixnum, type: 'session',
+              attributes: {
+                token: String
+              },
+              relationships: {
+                user: {
+                  data: { id: Fixnum, type: 'user' }
+                }
+              }
+            },
+            included: [ {
               id: Fixnum,
-              token: String
-            }
+              type: 'user',
+              attributes: {
+                email: String,
+              }
+            } ]
           }
           include_context 'expect_same_db_count', :session
           include_context 'expect_status_code', 201
