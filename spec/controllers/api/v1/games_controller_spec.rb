@@ -10,6 +10,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
   context 'POST #create' do
     let(:user) { create(:user) }
     let(:session) { create(:session, user: user) }
+    let(:game_attrs) { attributes_for(:game) }
+    let(:valid_game_json) do
+      return {
+        data: {
+          attributes: {
+            name: game_attrs[:name]
+          }
+        }
+      }
+    end
 
     context 'with valid token' do
       before(:each) { set_headers(token: session.token) }
@@ -20,7 +30,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           @initial_player_count = Player.all.count
           @initial_games = Game.all.to_a
           @initial_players = Player.all.to_a
-          post :create, { game: attributes_for(:game) }
+          post :create, valid_game_json
         end
 
         include_context 'expect_plus_one_db_count', :game, :player
@@ -48,6 +58,9 @@ RSpec.describe Api::V1::GamesController, type: :controller do
                 data: [
                   { id: Fixnum, type: 'player' }
                 ]
+              },
+              creator: {
+                data: { id: Fixnum, type: 'user' }
               }
             }
           },
@@ -78,8 +91,9 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             @initial_players = Player.all.to_a
 
             invalid_param_hash = { hash.keys.first => hash.values.first }
+            invalid_json = { data: { attributes: invalid_param_hash } }
 
-            post :create, { game: attributes_for(:game).merge(invalid_param_hash) }
+            post :create, valid_game_json.deep_merge(invalid_json)
           end
 
           include_context 'expect_same_db_count', :game, :player

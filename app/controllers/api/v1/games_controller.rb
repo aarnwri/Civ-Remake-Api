@@ -14,6 +14,9 @@ class Api::V1::GamesController < Api::V1::ApplicationController
               data: [
                 { id: @player.id, type: 'player' }
               ]
+            },
+            creator: {
+              data: { id: current_user.id, type: 'user' }
             }
           }
         },
@@ -37,6 +40,6 @@ class Api::V1::GamesController < Api::V1::ApplicationController
   private
 
     def new_game_params
-      params.require(:game).permit(:name).merge(creator_id: current_user.id)
+      params.require(:data).require(:attributes).permit(:name).merge(creator_id: current_user.id)
     end
 end
