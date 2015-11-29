@@ -4,6 +4,10 @@ class Game < ActiveRecord::Base
   has_many :players
   has_many :users, through: :players
 
+  validates :creator_id, {
+    presence: true
+  }
+
   validates :name, {
     length: { maximum: 50, message: "is too long (maximum is 50 characters)" }
   }

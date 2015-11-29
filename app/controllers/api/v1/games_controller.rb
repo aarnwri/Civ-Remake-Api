@@ -34,7 +34,21 @@ class Api::V1::GamesController < Api::V1::ApplicationController
         errors: @game.errors.full_messages
       }.to_json, status: :unprocessable_entity
     end
+  end
 
+  def index
+    @games = Game.all
+    json_data = []
+    @games.each do |game|
+      json_data << {
+        type: 'game',
+        id: game.id,
+        attributes: {
+          name: game.name
+        }
+      }
+    end
+    render json: { data: json_data }.to_json, status: :ok
   end
 
   private

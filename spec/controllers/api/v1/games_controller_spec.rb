@@ -137,4 +137,55 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       end
     end
   end
+
+  context 'GET #index', focus: true do
+    let(:user) { create(:user) }
+    let(:session) { create(:session, user: user) }
+
+    context 'with valid token' do
+      before(:each) do
+        set_headers(token: session.token)
+        3.times { create(:game, creator: user) }
+        get :index
+      end
+
+      include_context 'expect_status_code', 200
+      include_context 'expect_valid_json', {
+        data: [
+          {
+            type: 'game',
+            id: Fixnum,
+            attributes: {
+              name: String
+            }
+          }, {
+            type: 'game',
+            id: Fixnum,
+            attributes: {
+              name: String
+            }
+          }, {
+            type: 'game',
+            id: Fixnum,
+            attributes: {
+              name: String
+            }
+          }
+        ]
+      }
+    end
+
+    context 'with invalid token' do
+      # NOTE: we're not going to need valid params here... I don't think we need to
+      # test valid filter strings here either...
+
+      before(:each) do
+        set_headers(token: "gibberish")
+        get :index
+      end
+
+      include_context 'expect_json_error_message', 'token authentication failed'
+      include_context 'expect_status_code', 401
+    end
+  end
 end
