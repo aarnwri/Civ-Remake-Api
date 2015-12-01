@@ -8,35 +8,17 @@ class Api::V1::UsersController < Api::V1::ApplicationController
     if User.find_by(email: new_user_params[:email])
       render json: { errors: ["user already exists"] }.to_json, status: :forbidden
     else
-      user = User.new(email: new_user_params[:email], password: new_user_params[:password])
-      if user.save
-        session = Session.create(user: user)
-        session.create_token
+      @user = User.new(email: new_user_params[:email], password: new_user_params[:password])
+      if @user.save
+        @session = Session.create(user: @user)
+        @session.create_token
 
-        # TODO: clean this up using jbuilder...
-        render json: {
-          data: {
-            id: user.id,
-            type: 'user',
-            attributes: {
-              email: user.email
-            },
-            relationships: {
-              session: {
-                data: { id: session.id, type: 'session' }
-              }
-            }
-          },
-          included: [ {
-            id: session.id,
-            type: 'session',
-            attributes: {
-              token: session.token
-            }
-          } ]
-        }.to_json, status: :created
+        # included data
+        @sessions = [@session]
+
+        render :create, status: :created
       else
-        render json: { errors: user.errors.full_messages }.to_json, status: :unprocessable_entity
+        render json: { errors: @user.errors.full_messages }.to_json, status: :unprocessable_entity
       end
     end
   end

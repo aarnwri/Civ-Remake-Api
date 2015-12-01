@@ -6,6 +6,7 @@ require 'spec_helpers/headers'
 require 'controllers/api/v1/shared_contexts/requests'
 
 RSpec.describe Api::V1::GamesController, type: :controller do
+  render_views
 
   context 'POST #create' do
     let(:user) { create(:user) }
@@ -138,7 +139,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     end
   end
 
-  context 'GET #index', focus: true do
+  context 'GET #index' do
     let(:user) { create(:user) }
     let(:session) { create(:session, user: user) }
 

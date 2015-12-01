@@ -7,6 +7,7 @@ require 'controllers/api/v1/shared_contexts/authentication'
 require 'controllers/api/v1/shared_contexts/requests'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
+  render_views
 
   context 'POST #create' do
     context 'with valid credentials' do

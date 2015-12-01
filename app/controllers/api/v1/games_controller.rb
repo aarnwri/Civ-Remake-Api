@@ -4,31 +4,11 @@ class Api::V1::GamesController < Api::V1::ApplicationController
     @game = Game.new(new_game_params)
     if @game.save
       @player = Player.create(user_id: current_user.id, game_id: @game.id)
-      render json: {
-        data: { id: @game.id, type: 'game',
-          attributes: {
-            name: @game.name
-          },
-          relationships: {
-            players: {
-              data: [
-                { id: @player.id, type: 'player' }
-              ]
-            },
-            creator: {
-              data: { id: current_user.id, type: 'user' }
-            }
-          }
-        },
-        included: [ {
-          id: @player.id,
-          type: 'player',
-          attributes: {
-            user_id: @player.user_id,
-            game_id: @player.game_id
-          }
-        } ]
-      }.to_json, status: :created
+
+      # included data
+      @players = [@player]
+
+      render :create, status: :created
     else
       render json: {
         errors: @game.errors.full_messages
@@ -38,17 +18,8 @@ class Api::V1::GamesController < Api::V1::ApplicationController
 
   def index
     @games = Game.all
-    json_data = []
-    @games.each do |game|
-      json_data << {
-        type: 'game',
-        id: game.id,
-        attributes: {
-          name: game.name
-        }
-      }
-    end
-    render json: { data: json_data }.to_json, status: :ok
+
+    render :index, status: :ok
   end
 
   private

@@ -6,6 +6,7 @@ require 'controllers/api/v1/shared_contexts/authentication'
 require 'controllers/api/v1/shared_contexts/requests'
 
 RSpec.describe Api::V1::SessionsController, type: :controller do
+  render_views
 
   context 'POST #create' do
     let(:user) { create(:user) }

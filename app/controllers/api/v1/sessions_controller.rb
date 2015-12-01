@@ -4,37 +4,16 @@ class Api::V1::SessionsController < Api::V1::ApplicationController
 
   def create
     return unless clean_http_basic_params
-    user = User.find_by(email: login_params[:email])
+    @user = User.find_by(email: login_params[:email])
 
-    if user && user.authenticate(login_params[:password])
-      user.session.create_token
-      # TODO: fix this to use jbuilder
-      render json: {
-        data: {
-          id: user.session.id,
-          type: 'session',
-          attributes: {
-            token: user.session.token
-          },
-          relationships: {
-            user: {
-              data: {
-                id: user.id,
-                type: 'user'
-              }
-            }
-          }
-        },
-        included: [
-          {
-            id: user.id,
-            type: 'user',
-            attributes: {
-              email: user.email
-            }
-          }
-        ]
-      }.to_json, status: :created
+    if @user && @user.authenticate(login_params[:password])
+      @user.session.create_token
+
+      @session = @user.session
+      # included data
+      @users = [@user]
+
+      render :create, status: :created
     else
       render json: {
         "errors": ["invalid email or password"]
