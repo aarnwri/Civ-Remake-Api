@@ -1,12 +1,10 @@
 class Api::V1::GamesController < Api::V1::ApplicationController
 
   def create
-    @game = Game.new(new_game_params)
-    if @game.save
-      @player = Player.create(user_id: current_user.id, game_id: @game.id)
+    @game = Game.create(creator_id: current_user.id)
 
-      # included data
-      @players = [@player]
+    if @game
+      @players = @game.players
 
       render :create, status: :created
     else
@@ -21,10 +19,4 @@ class Api::V1::GamesController < Api::V1::ApplicationController
 
     render :index, status: :ok
   end
-
-  private
-
-    def new_game_params
-      params.require(:data).require(:attributes).permit(:name).merge(creator_id: current_user.id)
-    end
 end

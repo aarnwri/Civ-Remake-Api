@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
 
   has_many :players
   has_many :games, through: :players
+  has_many :created_games, class_name: "Game", foreign_key: :creator_id
 
   has_secure_password
   validates :password, {

@@ -23,6 +23,7 @@ RSpec.describe User, :type => :model do
     it { should have_one(:session) }
     it { should have_many(:players) }
     it { should have_many(:games).through(:players) }
+    it { should have_many(:created_games) }
 
     context 'when destroyed' do
       it 'should destroy its session' do

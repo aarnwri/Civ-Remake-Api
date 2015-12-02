@@ -17,4 +17,26 @@ RSpec.describe Game, type: :model do
 
     it { should validate_length_of(:name).is_at_most(50) }
   end
+
+  context 'on create' do
+    before(:each) { @game = create(:game) }
+
+    it 'should call generate_name' do
+      expect(Game.find(@game.id).name).to_not be_empty
+    end
+
+    it 'should add the creator to the newly generated game' do
+      expect(Player.find_by(user_id: @game.creator.id, game_id: @game.id)).to_not be_nil
+    end
+  end
+
+  context 'methods' do
+    context 'generate_name' do
+      it 'add some examples here'
+    end
+
+    context 'add_creator_as_player' do
+      it 'add some examples here'
+    end
+  end
 end

@@ -12,15 +12,15 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     let(:user) { create(:user) }
     let(:session) { create(:session, user: user) }
     let(:game_attrs) { attributes_for(:game) }
-    let(:valid_game_json) do
-      return {
-        data: {
-          attributes: {
-            name: game_attrs[:name]
-          }
-        }
-      }
-    end
+    # let(:valid_game_json) do
+    #   return {
+    #     data: {
+    #       attributes: {
+    #         # name: game_attrs[:name]
+    #       }
+    #     }
+    #   }
+    # end
 
     context 'with valid token' do
       before(:each) { set_headers(token: session.token) }
@@ -31,7 +31,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           @initial_player_count = Player.all.count
           @initial_games = Game.all.to_a
           @initial_players = Player.all.to_a
-          post :create, valid_game_json
+          post :create
         end
 
         include_context 'expect_plus_one_db_count', :game, :player
@@ -76,66 +76,47 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         }
       end
 
-      invalid_attributes = [
-        { name: "x" * 51,
-          reason: "is too long",
-          error: "Name is too long (maximum is 50 characters)"
-        }
-      ]
-
-      invalid_attributes.each do |hash|
-        context "because #{hash.keys.first.to_s} #{hash[:reason]}" do
-          before(:each) do
-            @initial_game_count = Game.all.count
-            @initial_player_count = Player.all.count
-            @initial_games = Game.all.to_a
-            @initial_players = Player.all.to_a
-
-            invalid_param_hash = { hash.keys.first => hash.values.first }
-            invalid_json = { data: { attributes: invalid_param_hash } }
-
-            post :create, valid_game_json.deep_merge(invalid_json)
-          end
-
-          include_context 'expect_same_db_count', :game, :player
-          include_context 'expect_status_code', 422
-          include_context 'expect_json_error_message', "#{hash[:error]}"
-        end
-      end
-
-      # context 'with invalid params' do
-      #   context 'because name is too long' do
+      # invalid_attributes = [
+      #   { name: "x" * 51,
+      #     reason: "is too long",
+      #     error: "Name is too long (maximum is 50 characters)"
+      #   }
+      # ]
+      #
+      # invalid_attributes.each do |hash|
+      #   context "because #{hash.keys.first.to_s} #{hash[:reason]}" do
       #     before(:each) do
       #       @initial_game_count = Game.all.count
       #       @initial_player_count = Player.all.count
       #       @initial_games = Game.all.to_a
       #       @initial_players = Player.all.to_a
-      #       post :create, { game: attributes_for(:game, name: "x" * 51) }
+      #
+      #       invalid_param_hash = { hash.keys.first => hash.values.first }
+      #       invalid_json = { data: { attributes: invalid_param_hash } }
+      #
+      #       post :create, valid_game_json.deep_merge(invalid_json)
       #     end
       #
       #     include_context 'expect_same_db_count', :game, :player
-      #     include_context 'expect_json_error_message', 'token authentication failed'
-      #     include_context 'expect_status_code', 401
+      #     include_context 'expect_status_code', 422
+      #     include_context 'expect_json_error_message', "#{hash[:error]}"
       #   end
       # end
     end
 
     context 'with invalid token' do
-      before(:each) { set_headers(token: "gibberish") }
-
-      context 'even with valid params' do
-        before(:each) do
-          @initial_game_count = Game.all.count
-          @initial_player_count = Player.all.count
-          @initial_games = Game.all.to_a
-          @initial_players = Player.all.to_a
-          post :create, { game: attributes_for(:game) }
-        end
-
-        include_context 'expect_same_db_count', :game, :player
-        include_context 'expect_json_error_message', 'token authentication failed'
-        include_context 'expect_status_code', 401
+      before(:each) do
+        set_headers(token: "gibberish")
+        @initial_game_count = Game.all.count
+        @initial_player_count = Player.all.count
+        @initial_games = Game.all.to_a
+        @initial_players = Player.all.to_a
+        post :create
       end
+
+      include_context 'expect_same_db_count', :game, :player
+      include_context 'expect_json_error_message', 'token authentication failed'
+      include_context 'expect_status_code', 401
     end
   end
 
