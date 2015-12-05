@@ -15,7 +15,7 @@ class Api::V1::GamesController < Api::V1::ApplicationController
   end
 
   def index
-    @games = Game.all
+    @games = (current_user.created_games + current_user.games).uniq
 
     render :index, status: :ok
   end
