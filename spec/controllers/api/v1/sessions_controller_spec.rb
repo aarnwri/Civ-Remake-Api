@@ -230,4 +230,84 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       end
     end
   end
+
+  context 'GET #show' do
+    let(:user) { create(:user) }
+    let!(:session) { create(:session, user: user) }
+
+    context 'with invalid token' do
+      context 'because it does not exist' do
+        before(:each) do
+          set_headers(token: "invalid")
+          @initial_session_count = Session.all.count
+          get :show, id: session.id
+        end
+
+        include_context 'expect_same_db_count', :session
+        include_context 'expect_same_db_attrs', :session
+        include_context 'expect_json_error_message', 'token authentication failed'
+        include_context 'expect_status_code', 401
+      end
+    end
+
+    context 'with valid token' do
+      before(:each) { set_headers(token: session.token) }
+
+      context 'and valid id' do
+        before(:each) do
+          @initial_session_count = Session.all.count
+          get :show, id: session.id
+        end
+
+        include_context 'expect_same_db_count', :session
+        include_context 'expect_status_code', 200
+        include_context 'expect_valid_json', {
+          data: { id: Fixnum, type: 'session',
+            attributes: {
+              token: String
+            },
+            relationships: {
+              user: {
+                data: { id: Fixnum, type: 'user' }
+              }
+            }
+          },
+          included: [ {
+            id: Fixnum,
+            type: 'user',
+            attributes: {
+              email: String,
+            }
+          } ]
+        }
+      end
+
+      context 'and invalid id' do
+        context 'because it belongs to another user' do
+          before(:each) do
+            @session2 = create(:session)
+            @initial_session_count = Session.all.count
+            get :show, id: @session2.id
+          end
+
+          include_context 'expect_same_db_count', :session
+          include_context 'expect_same_db_attrs', :session
+          include_context 'expect_status_code', 403
+          include_context 'expect_json_error_message', 'cannot fetch another user session'
+        end
+
+        context 'because it does not exist' do
+          before(:each) do
+            @initial_session_count = Session.all.count
+            get :show, id: 1000
+          end
+
+          include_context 'expect_same_db_count', :session
+          include_context 'expect_same_db_attrs', :session
+          include_context 'expect_status_code', 422
+          include_context 'expect_json_error_message', 'session not found'
+        end
+      end
+    end
+  end
 end
