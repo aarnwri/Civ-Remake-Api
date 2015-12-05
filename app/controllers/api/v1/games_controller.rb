@@ -6,7 +6,7 @@ class Api::V1::GamesController < Api::V1::ApplicationController
     if @game
       @players = @game.players
 
-      render :create, status: :created
+      render :show, status: :created
     else
       render json: {
         errors: @game.errors.full_messages

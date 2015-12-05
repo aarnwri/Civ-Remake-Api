@@ -16,7 +16,7 @@ class Api::V1::UsersController < Api::V1::ApplicationController
         # included data
         @sessions = [@session]
 
-        render :create, status: :created
+        render :show, status: :created
       else
         render json: { errors: @user.errors.full_messages }.to_json, status: :unprocessable_entity
       end
