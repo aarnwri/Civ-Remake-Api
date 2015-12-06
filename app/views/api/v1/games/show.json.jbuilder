@@ -3,6 +3,7 @@ json.data do
   json.type 'game'
   json.attributes do
     json.name @game.name
+    json.started @game.started
   end
   json.relationships do
     json.players do

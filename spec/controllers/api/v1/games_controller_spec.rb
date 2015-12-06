@@ -52,7 +52,8 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         include_context 'expect_valid_json', {
           data: { id: Fixnum, type: 'game',
             attributes: {
-              name: String
+              name: String,
+              started: false,
             },
             relationships: {
               players: {

@@ -4,6 +4,7 @@ class CreateGames < ActiveRecord::Migration
       t.integer :creator_id     # belongs_to User
 
       t.string :name
+      t.boolean :started
 
       t.timestamps null: false
     end
