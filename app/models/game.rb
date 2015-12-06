@@ -1,6 +1,7 @@
 class Game < ActiveRecord::Base
 
   before_create :generate_name
+  before_create :set_started_to_false
   after_create :add_creator_as_player
 
   belongs_to :creator, class_name: "User"
@@ -27,6 +28,13 @@ class Game < ActiveRecord::Base
 
       next_int_str = highest_int ? highest_int + 1 : "1"
       self.name = "new_game_#{next_int_str}"
+    end
+
+    def set_started_to_false
+      self.started = false
+
+      # NOTE: need to return true here or else rails will think the callback failed
+      return true
     end
 
     def add_creator_as_player

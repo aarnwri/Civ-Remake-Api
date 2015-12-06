@@ -65,6 +65,14 @@ def validate_json_with_hash (hash, json = parse_json_response, json_path = nil)
       error_message = "#{new_json_path} does not match #{hash[key]}"
       expect(json[key.to_s]).to eq(hash[key]), error_message
 
+    elsif hash[key].instance_of?(TrueClass)
+      error_message = "expected #{new_json_path} to be true"
+      expect(json[key.to_s]).to eq(true), error_message
+
+    elsif hash[key].instance_of?(FalseClass)
+      error_message = "expected #{new_json_path} to be false"
+      expect(json[key.to_s]).to eq(false), error_message
+
     else
       error_message = "expected #{new_json_path} to be a #{hash[key]}"
       expect((json[key.to_s]).instance_of?(hash[key])).to eq(true), error_message

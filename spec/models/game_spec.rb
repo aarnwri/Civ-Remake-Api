@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Game, type: :model do
   context 'attributes' do
     it { should respond_to(:name) }
+    it { should respond_to(:started) }
   end
 
   context 'relationships' do
@@ -23,6 +24,12 @@ RSpec.describe Game, type: :model do
 
     it 'should call generate_name' do
       expect(Game.find(@game.id).name).to_not be_empty
+    end
+
+    it 'should have \'started\' set to false' do
+      @game = create(:game, started: nil)
+
+      expect(Game.find(@game.id).started?).to be false
     end
 
     it 'should add the creator to the newly generated game' do
