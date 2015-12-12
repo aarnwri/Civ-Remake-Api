@@ -13,9 +13,6 @@ class Api::V1::UsersController < Api::V1::ApplicationController
         @session = Session.create(user: @user)
         @session.create_token
 
-        # included data
-        @sessions = [@session]
-
         render :show, status: :created
       else
         render json: { errors: @user.errors.full_messages }.to_json, status: :unprocessable_entity

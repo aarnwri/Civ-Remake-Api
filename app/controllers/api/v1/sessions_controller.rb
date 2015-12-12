@@ -10,9 +10,6 @@ class Api::V1::SessionsController < Api::V1::ApplicationController
       @user.session.create_token
 
       @session = @user.session
-      # included data
-      @users = [@user]
-
       render :show, status: :created
     else
       render json: {
@@ -41,11 +38,6 @@ class Api::V1::SessionsController < Api::V1::ApplicationController
     session = Session.find_by(id: params[:id])
     if session
       if session == @session
-        @user = session.user
-
-        # included data
-        @users = [@user]
-
         render :show, status: :ok
       else
         render json: {

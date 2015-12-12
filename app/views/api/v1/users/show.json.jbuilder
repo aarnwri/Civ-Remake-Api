@@ -7,7 +7,7 @@ json.data do
   json.relationships do
     json.session do
       json.data do
-        json.id @session.id
+        json.id @user.session.id
         json.type 'session'
       end
     end
@@ -15,7 +15,7 @@ json.data do
 end
 
 json.included do
-  json.array! @sessions do |session|
+  json.array! [@user.session] do |session|
     json.id session.id
     json.type 'session'
     json.attributes do
