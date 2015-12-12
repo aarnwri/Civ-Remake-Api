@@ -13,6 +13,7 @@ RSpec.describe Player, type: :model do
 
   context 'relationships' do
     it { should belong_to(:user) }
+    it { should belong_to(:playing_user).class_name('User').with_foreign_key(:user_id) }
     it { should belong_to(:game) }
   end
 

@@ -4,6 +4,7 @@ class Player < ActiveRecord::Base
   # a game has many users.
 
   belongs_to :user
+  belongs_to :playing_user, class_name: "User", foreign_key: :user_id      # NOTE: this is here for namespacing
   belongs_to :game
 
   validates :user_id, {

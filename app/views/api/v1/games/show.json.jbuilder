@@ -40,11 +40,11 @@ json.included do
       end
     end
   end
-  json.array! @game.players do |player|
-    json.id player.user.id
+  json.array! @game.playing_users do |user|
+    json.id user.id
     json.type 'user'
     json.attributes do
-      json.email player.user.email
+      json.email user.email
     end
   end
 end
