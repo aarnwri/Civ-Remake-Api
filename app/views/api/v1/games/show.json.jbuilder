@@ -8,7 +8,7 @@ json.data do
   json.relationships do
     json.players do
       json.data do
-        json.array! @players do |player|
+        json.array! @game.players do |player|
           json.id player.id
           json.type 'player'
         end
@@ -24,7 +24,7 @@ json.data do
 end
 
 json.included do
-  json.array! @players do |player|
+  json.array! @game.players do |player|
     json.id player.id
     json.type 'player'
     json.attributes do
@@ -40,11 +40,11 @@ json.included do
       end
     end
   end
-  json.array! @players do |player|
-    json.id player.user.id
+  json.array! @game.playing_users do |user|
+    json.id user.id
     json.type 'user'
     json.attributes do
-      json.email player.user.email
+      json.email user.email
     end
   end
 end

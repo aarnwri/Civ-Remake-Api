@@ -56,6 +56,10 @@ def validate_json_with_hash (hash, json = parse_json_response, json_path = nil)
     elsif hash[key].instance_of?(Array)
       error_message = "#{new_json_path} is not a Array"
       expect(json[key.to_s]).to be_a(Array), error_message
+
+      error_message = "#{new_json_path} has the wrong number of elements: #{json[key.to_s].count} for #{hash[key].count}"
+      expect(json[key.to_s].count).to eq(hash[key].count), error_message
+      
       hash[key].each_index do |idx|
         new_json_path = new_json_path + "[#{idx}]"
         validate_json_with_hash(hash[key][idx], json[key.to_s][idx], new_json_path)

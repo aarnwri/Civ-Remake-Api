@@ -1,11 +1,10 @@
 class Api::V1::GamesController < Api::V1::ApplicationController
 
   def create
+    # NOTE: the create action should not accept any params and should always succeed
+
     @game = Game.create(creator_id: current_user.id)
-
     if @game
-      @players = @game.players
-
       render :show, status: :created
     else
       render json: {
