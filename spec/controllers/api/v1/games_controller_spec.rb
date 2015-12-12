@@ -9,9 +9,10 @@ require 'controllers/api/v1/shared_contexts/controllers'
 RSpec.describe Api::V1::GamesController, type: :controller do
   render_views
 
+  let(:user) { create(:user) }
+  let(:session) { create(:session, user: user) }
+
   context 'POST #create' do
-    let(:user) { create(:user) }
-    let(:session) { create(:session, user: user) }
     let(:game_attrs) { attributes_for(:game) }
 
     context 'with valid token' do
@@ -57,11 +58,12 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           },
           included: [
             { id: Fixnum, type: 'player',
-              attributes: { user_id: Fixnum, game_id: Fixnum },
+              # attributes: {},
               relationships: {
                 user: { data: { id: Fixnum, type: 'user' } }
               }
-            }, {
+            },
+            {
               id: Fixnum, type: 'user',
               attributes: { email: String }
             }
@@ -78,9 +80,6 @@ RSpec.describe Api::V1::GamesController, type: :controller do
   end
 
   context 'GET #index' do
-    let(:user) { create(:user) }
-    let(:session) { create(:session, user: user) }
-
     context 'with valid token' do
       before(:each) { set_headers(token: session.token) }
 
@@ -125,6 +124,137 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     include_context 'with_invalid_token', {
       method: :get,
       action: :index
+    }
+  end
+
+  context 'GET #show' do
+    let!(:game) { create(:game, creator: user) }
+
+    context 'with valid token' do
+      before(:each) { set_headers(token: session.token) }
+
+      context 'with valid id param' do
+        context 'where current_user is the creator' do
+          before(:each) do
+            @initial_game_count = Game.all.count
+            get :show, id: game.id
+          end
+
+          include_context 'expect_status_code', 200
+          include_context 'expect_same_db_count', :game
+          include_context 'expect_same_db_attrs', :game
+          include_context 'expect_valid_json', {
+            data: { id: Fixnum, type: 'game',
+              attributes: { name: String, started: false },
+              relationships: {
+                players: {
+                  data: [
+                    { id: Fixnum, type: 'player' }
+                  ]
+                },
+                creator: { data: { id: Fixnum, type: 'user' } }
+              }
+            },
+            included: [
+              { id: Fixnum, type: 'player',
+                # attributes: {},
+                relationships: {
+                  user: { data: { id: Fixnum, type: 'user' } }
+                }
+              },
+              {
+                id: Fixnum, type: 'user',
+                attributes: { email: String }
+              }
+            ]
+          }
+        end
+
+        context 'where current_user is the player' do
+          let(:user_2) { create(:user) }
+          let(:game) { create(:game, creator: user_2) }
+
+          before(:each) do
+            @initial_game_count = Game.all.count
+            create(:player, user: user, game: game)
+            get :show, id: game.id
+          end
+
+          include_context 'expect_status_code', 200
+          include_context 'expect_same_db_count', :game
+          include_context 'expect_same_db_attrs', :game
+          include_context 'expect_valid_json', {
+            data: { id: Fixnum, type: 'game',
+              attributes: { name: String, started: false },
+              relationships: {
+                players: {
+                  data: [
+                    { id: Fixnum, type: 'player' },
+                    { id: Fixnum, type: 'player' }
+                  ]
+                },
+                creator: { data: { id: Fixnum, type: 'user' } }
+              }
+            },
+            included: [
+              { id: Fixnum, type: 'player',
+                # attributes: {},
+                relationships: {
+                  user: { data: { id: Fixnum, type: 'user' } }
+                }
+              },
+              { id: Fixnum, type: 'player',
+                # attributes: {},
+                relationships: {
+                  user: { data: { id: Fixnum, type: 'user' } }
+                }
+              },
+              {
+                id: Fixnum, type: 'user',
+                attributes: { email: String }
+              },
+              {
+                id: Fixnum, type: 'user',
+                attributes: { email: String }
+              }
+            ]
+          }
+        end
+      end
+
+      context 'with invalid id param' do
+        context 'because it does not exist' do
+          before(:each) do
+            @initial_game_count = Game.all.count
+            get :show, id: 1000
+          end
+
+          include_context 'expect_same_db_count', :game
+          include_context 'expect_same_db_attrs', :game
+          include_context 'expect_status_code', 422
+          include_context 'expect_json_error_message', 'game not found'
+        end
+
+        context 'because current_user did not create it and is not playing' do
+          before(:each) do
+            @user_2 = create(:user)
+            @game = create(:game, creator: @user_2)
+            @initial_game_count = Game.all.count
+            get :show, id: @game.id
+          end
+
+          include_context 'expect_same_db_count', :game
+          include_context 'expect_same_db_attrs', :game
+          include_context 'expect_status_code', 403
+          include_context 'expect_json_error_message', 'cannot fetch games not playing'
+        end
+      end
+    end
+
+    include_context 'with_invalid_token', {
+      method: :get,
+      action: :show,
+      params: { id: 1 }
     }
   end
 

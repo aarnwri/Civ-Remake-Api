@@ -59,7 +59,7 @@ def validate_json_with_hash (hash, json = parse_json_response, json_path = nil)
 
       error_message = "#{new_json_path} has the wrong number of elements: #{json[key.to_s].count} for #{hash[key].count}"
       expect(json[key.to_s].count).to eq(hash[key].count), error_message
-      
+
       hash[key].each_index do |idx|
         new_json_path = new_json_path + "[#{idx}]"
         validate_json_with_hash(hash[key][idx], json[key.to_s][idx], new_json_path)

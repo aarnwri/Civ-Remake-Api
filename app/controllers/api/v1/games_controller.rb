@@ -18,4 +18,22 @@ class Api::V1::GamesController < Api::V1::ApplicationController
 
     render :index, status: :ok
   end
+
+  def show
+    @game = Game.find_by(id: params[:id])
+
+    if @game
+      if @game.playing_users.include?(current_user)
+        render :show, status: :ok
+      else
+        render json: {
+          "errors": ["cannot fetch games not playing"]
+        }.to_json, status: :forbidden
+      end
+    else
+      render json: {
+        "errors": ['game not found']
+      }.to_json, status: :unprocessable_entity
+    end
+  end
 end
