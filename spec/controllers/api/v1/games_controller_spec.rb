@@ -69,6 +69,12 @@ RSpec.describe Api::V1::GamesController, type: :controller do
                 data: { id: Fixnum, type: 'user' }
               }
             }
+          }, {
+            id: Fixnum,
+            type: 'user',
+            attributes: {
+              email: String
+            }
           } ]
         }
       end
