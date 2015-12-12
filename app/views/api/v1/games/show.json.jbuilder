@@ -28,8 +28,8 @@ json.included do
     json.id player.id
     json.type 'player'
     json.attributes do
-      json.user_id player.user_id
-      json.game_id player.game_id
+      # json.user_id player.user_id # NOTE: we aren't using id's client side ember data takes care of this
+      # json.game_id player.game_id
     end
     json.relationships do
       json.user do

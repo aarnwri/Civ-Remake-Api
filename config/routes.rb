@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :sessions, only: [:create, :destroy, :show]
       resources :users, only: [:create]
-      resources :games, only: [:create, :index]
+      resources :games, only: [:create, :index, :show]
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.

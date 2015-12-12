@@ -43,22 +43,14 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
           include_context 'expect_valid_json', {
             data: { id: Fixnum, type: 'session',
-              attributes: {
-                token: String
-              },
+              attributes: { token: String },
               relationships: {
-                user: {
-                  data: { id: Fixnum, type: 'user' }
-                }
+                user: { data: { id: Fixnum, type: 'user' } }
               }
             },
-            included: [ {
-              id: Fixnum,
-              type: 'user',
-              attributes: {
-                email: String,
-              }
-            } ]
+            included: [
+              { id: Fixnum, type: 'user', attributes: { email: String } }
+            ]
           }
           include_context 'expect_same_db_count', :session
           include_context 'expect_status_code', 201
@@ -79,22 +71,14 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
           include_context 'expect_valid_json', {
             data: { id: Fixnum, type: 'session',
-              attributes: {
-                token: String
-              },
+              attributes: { token: String },
               relationships: {
-                user: {
-                  data: { id: Fixnum, type: 'user' }
-                }
+                user: { data: { id: Fixnum, type: 'user' } }
               }
             },
-            included: [ {
-              id: Fixnum,
-              type: 'user',
-              attributes: {
-                email: String,
-              }
-            } ]
+            included: [
+              { id: Fixnum, type: 'user', attributes: { email: String } }
+            ]
           }
           include_context 'expect_same_db_count', :session
           include_context 'expect_status_code', 201
@@ -263,22 +247,14 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
         include_context 'expect_status_code', 200
         include_context 'expect_valid_json', {
           data: { id: Fixnum, type: 'session',
-            attributes: {
-              token: String
-            },
+            attributes: { token: String },
             relationships: {
-              user: {
-                data: { id: Fixnum, type: 'user' }
-              }
+              user: { data: { id: Fixnum, type: 'user' } }
             }
           },
-          included: [ {
-            id: Fixnum,
-            type: 'user',
-            attributes: {
-              email: String,
-            }
-          } ]
+          included: [
+            { id: Fixnum, type: 'user', attributes: { email: String } }
+          ]
         }
       end
 

@@ -33,22 +33,14 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
         include_context 'expect_valid_json', {
           data: { id: Fixnum, type: 'user',
-            attributes: {
-              email: String
-            },
+            attributes: { email: String },
             relationships: {
-              session: {
-                data: { id: Fixnum, type: 'session' }
-              }
+              session: { data: { id: Fixnum, type: 'session' } }
             }
           },
-          included: [ {
-            id: Fixnum,
-            type: 'session',
-            attributes: {
-              token: String,
-            }
-          } ]
+          included: [
+            { id: Fixnum, type: 'session', attributes: { token: String } }
+          ]
         }
       end
 
