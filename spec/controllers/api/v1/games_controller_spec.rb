@@ -12,15 +12,6 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     let(:user) { create(:user) }
     let(:session) { create(:session, user: user) }
     let(:game_attrs) { attributes_for(:game) }
-    # let(:valid_game_json) do
-    #   return {
-    #     data: {
-    #       attributes: {
-    #         # name: game_attrs[:name]
-    #       }
-    #     }
-    #   }
-    # end
 
     context 'with valid token' do
       before(:each) { set_headers(token: session.token) }
@@ -72,6 +63,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             attributes: {
               user_id: Fixnum,
               game_id: Fixnum
+            },
+            relationships: {
+              user: {
+                data: { id: Fixnum, type: 'user' }
+              }
             }
           } ]
         }
