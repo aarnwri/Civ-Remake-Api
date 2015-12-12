@@ -1,5 +1,29 @@
-# require 'support/headers'
-# require 'support/requests'
+require 'spec_helpers/requests'
+require 'spec_helpers/headers'
+
+# required options are :method and :action
+# optional options are :models which should be an array of the models involved to
+#   verify that they aren't being touched in the database
+RSpec.shared_context 'with_invalid_token' do |options|
+  context 'with invalid token' do
+    before(:each) do
+      set_headers(token: "gibberish")
+
+      if options[:models]
+        options[:models].each do |model|
+          klass = model.to_s.camelize.constantize
+          instance_variable_set("@initial_#{model.to_s}_count", klass.all.count)
+        end
+      end
+
+      self.send(options[:method], options[:action], options[:params])
+    end
+
+    include_context 'expect_same_db_count', *options[:models] if options[:models]
+    include_context 'expect_json_error_message', 'token authentication failed'
+    include_context 'expect_status_code', 401
+  end
+end
 #
 # require 'controllers/api/v1/shared_examples/sessions'
 #
