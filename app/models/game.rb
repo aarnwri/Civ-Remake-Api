@@ -6,7 +6,7 @@ class Game < ActiveRecord::Base
 
   belongs_to :creator, class_name: "User"
   has_many :players
-  has_many :playing_users, as: :users, through: :players, class_name: "User"
+  has_many :playing_users, through: :players, class_name: "User"
   has_many :invites
   has_many :invited_users, through: :invites, class_name: "User"
 
