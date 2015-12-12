@@ -7,5 +7,6 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 ("a".."e").each do |char|
-  User.create(email: "#{char}@#{char}.com", password: "password")
+  user = User.create(email: "#{char}@#{char}.com", password: "password")
+  Session.create(user: user)
 end
