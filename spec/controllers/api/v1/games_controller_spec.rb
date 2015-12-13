@@ -51,6 +51,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
                   { id: Fixnum, type: 'player' }
                 ]
               },
+              invites: { data: [] },
               creator: {
                 data: { id: Fixnum, type: 'user' }
               }
@@ -152,12 +153,68 @@ RSpec.describe Api::V1::GamesController, type: :controller do
                     { id: Fixnum, type: 'player' }
                   ]
                 },
+                invites: { data: [] },
                 creator: { data: { id: Fixnum, type: 'user' } }
               }
             },
             included: [
               { id: Fixnum, type: 'player',
                 # attributes: {},
+                relationships: {
+                  user: { data: { id: Fixnum, type: 'user' } }
+                }
+              },
+              {
+                id: Fixnum, type: 'user',
+                attributes: { email: String }
+              }
+            ]
+          }
+        end
+
+        context 'where current_user is the creator and has invited another player' do
+          let(:user_2) { create(:user) }
+
+          before(:each) do
+            create(:invite, user: user_2, game: game)
+            @initial_game_count = Game.all.count
+            get :show, id: game.id
+          end
+
+          include_context 'expect_status_code', 200
+          include_context 'expect_same_db_count', :game
+          include_context 'expect_same_db_attrs', :game
+          include_context 'expect_valid_json', {
+            data: { id: Fixnum, type: 'game',
+              attributes: { name: String, started: false },
+              relationships: {
+                players: {
+                  data: [
+                    { id: Fixnum, type: 'player' }
+                  ]
+                },
+                invites: {
+                  data: [
+                    { id: Fixnum, type: 'invite' }
+                  ]
+                },
+                creator: { data: { id: Fixnum, type: 'user' } }
+              }
+            },
+            included: [
+              { id: Fixnum, type: 'player',
+                # attributes: {},
+                relationships: {
+                  user: { data: { id: Fixnum, type: 'user' } }
+                }
+              },
+              {
+                id: Fixnum, type: 'user',
+                attributes: { email: String }
+              },
+              {
+                id: Fixnum, type: 'invite',
+                attributes: { received: false, accepted: false, rejected: false },
                 relationships: {
                   user: { data: { id: Fixnum, type: 'user' } }
                 }
@@ -193,6 +250,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
                     { id: Fixnum, type: 'player' }
                   ]
                 },
+                invites: { data: [] },
                 creator: { data: { id: Fixnum, type: 'user' } }
               }
             },
