@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       resources :sessions, only: [:create, :destroy, :show]
       resources :users, only: [:create]
       resources :games, only: [:create, :index, :show]
+      resources :invites, only: [:create]
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.
