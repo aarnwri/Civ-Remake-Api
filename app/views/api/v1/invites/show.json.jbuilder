@@ -13,6 +13,12 @@ json.data do
         json.type 'user'
       end
     end
+    json.game do
+      json.data do
+        json.id @invite.game.id
+        json.type 'game'
+      end
+    end
   end
 end
 

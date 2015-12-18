@@ -9,11 +9,11 @@ require 'controllers/api/v1/shared_contexts/controllers'
 RSpec.describe Api::V1::InvitesController, type: :controller do
   render_views
 
-  let(:user) { create(:user) }
-  let(:session) { create(:session, user: user) }
+  let!(:user) { create(:user) }
+  let!(:session) { create(:session, user: user) }
 
-  let(:game) { create(:game, creator: user) }
-  let(:invited_user) { create(:user) }
+  let!(:game) { create(:game, creator: user) }
+  let!(:invited_user) { create(:user) }
 
   context 'POST #create' do
     context 'with valid token' do
@@ -23,7 +23,7 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         before(:each) do
           set_initial_model_counts(:invite, :game, :user)
           set_initial_model_arrays(:invite)
-          post :create
+          post :create, { invite: { user_id: invited_user.id, game_id: game.id } }
         end
 
         include_context 'expect_plus_one_db_count', :invite
@@ -31,7 +31,7 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         include_context 'expect_status_code', 201
         it 'should have the new invite belonging to the user' do
           new_invite = (Invite.all.to_a - @initial_invites).first
-          expect(new_invite.user).to eq(user)
+          expect(new_invite.user).to eq(invited_user)
         end
         it 'should have the new invite belonging to the game' do
           new_invite = (Invite.all.to_a - @initial_invites).first
@@ -57,7 +57,7 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         context 'because user does not exist' do
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { user_id: 1000, game_id: game.id }
+            post :create, { invite: { user_id: 1000, game_id: game.id } }
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
@@ -68,7 +68,7 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         context 'because game does not exist' do
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { user_id: invited_user.id, game_id: 1000 }
+            post :create, { invite: { user_id: invited_user.id, game_id: 1000 } }
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
@@ -77,12 +77,12 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         end
 
         context 'because game creator is not the current_user' do
-          let(:user_2) { create(:user) }
-          let(:wrong_game) { create(:game, creator: user_2) }
+          let!(:user_2) { create(:user) }
+          let!(:wrong_game) { create(:game, creator: user_2) }
 
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { user_id: invited_user.id, game_id: wrong_game.id }
+            post :create, { invite: { user_id: invited_user.id, game_id: wrong_game.id } }
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
@@ -93,7 +93,7 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         context 'because the user is the game creator' do
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { user_id: user.id, game_id: game.id }
+            post :create, { invite: { user_id: user.id, game_id: game.id } }
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
