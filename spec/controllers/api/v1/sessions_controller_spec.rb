@@ -18,7 +18,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
         include_context "removed_auth_header"
         before(:each) do
           json_params = { session: credentials }
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:session)
           post :create, json_params
         end
 
@@ -33,7 +33,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
         context 'where the existing token not nil' do
           before(:each) do
             @original_token = session.token
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:session)
             post :create
           end
 
@@ -60,7 +60,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
           before(:each) do
             session.destroy_token
             @original_token = Session.find(session.id).token
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:session)
             post :create
           end
 
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
         include_context 'token_authenticated_user'
 
         before(:each) do
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:session)
           post :create
         end
 
@@ -118,7 +118,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       invalid_creds.each do |hash|
         context "because #{hash.keys.first.to_s} #{hash[:reason]}" do
           before(:each) do
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:session)
 
             invalid_param_hash = { hash.keys.first => hash.values.first }
             set_headers({ basic: credentials.merge(invalid_param_hash) })
@@ -143,7 +143,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
         before(:each) do
           @params = { session: { token: session.token, id: session.id } }.to_json
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:session)
           delete :destroy, @params, id: session.id
         end
 
@@ -156,7 +156,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       context 'because it does not exist' do
         before(:each) do
           set_headers(token: "invalid")
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:session)
           delete :destroy, id: session.id
         end
 
@@ -172,7 +172,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
       context 'and valid id' do
         before(:each) do
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:session)
           delete :destroy, id: session.id
         end
 
@@ -190,7 +190,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
         context 'because it belongs to another user' do
           before(:each) do
             @session2 = create(:session)
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:session)
             delete :destroy, id: @session2.id
           end
 
@@ -202,7 +202,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
         context 'because it does not exist' do
           before(:each) do
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:session)
             delete :destroy, id: 1000
           end
 
@@ -223,7 +223,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
       context 'because it does not exist' do
         before(:each) do
           set_headers(token: "invalid")
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:session)
           get :show, id: session.id
         end
 
@@ -239,7 +239,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
       context 'and valid id' do
         before(:each) do
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:session)
           get :show, id: session.id
         end
 
@@ -262,7 +262,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
         context 'because it belongs to another user' do
           before(:each) do
             @session2 = create(:session)
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:session)
             get :show, id: @session2.id
           end
 
@@ -274,7 +274,7 @@ RSpec.describe Api::V1::SessionsController, type: :controller do
 
         context 'because it does not exist' do
           before(:each) do
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:session)
             get :show, id: 1000
           end
 

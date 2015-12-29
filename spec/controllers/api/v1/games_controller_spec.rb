@@ -20,10 +20,8 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       context 'with valid params' do
         before(:each) do
-          @initial_game_count = Game.all.count
-          @initial_player_count = Player.all.count
-          @initial_games = Game.all.to_a
-          @initial_players = Player.all.to_a
+          set_initial_model_counts(:game, :player)
+          set_initial_model_arrays(:game, :player)
           post :create
         end
 
@@ -137,7 +135,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       context 'with valid id param' do
         context 'where current_user is the creator' do
           before(:each) do
-            @initial_game_count = Game.all.count
+            set_initial_model_counts(:game)
             get :show, id: game.id
           end
 
@@ -177,7 +175,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
           before(:each) do
             create(:invite, user: user_2, game: game)
-            @initial_game_count = Game.all.count
+            set_initial_model_counts(:game)
             get :show, id: game.id
           end
 
@@ -232,7 +230,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           let(:game) { create(:game, creator: user_2) }
 
           before(:each) do
-            @initial_game_count = Game.all.count
+            set_initial_model_counts(:game)
             create(:player, user: user, game: game)
             get :show, id: game.id
           end
@@ -283,7 +281,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       context 'with invalid id param' do
         context 'because it does not exist' do
           before(:each) do
-            @initial_game_count = Game.all.count
+            set_initial_model_counts(:game)
             get :show, id: 1000
           end
 
@@ -297,7 +295,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           before(:each) do
             @user_2 = create(:user)
             @game = create(:game, creator: @user_2)
-            @initial_game_count = Game.all.count
+            set_initial_model_counts(:game)
             get :show, id: @game.id
           end
 

@@ -16,10 +16,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       context 'sent via headers' do
         before(:each) do
           set_headers({ basic: user_hash })
-          @initial_user_count = User.all.count
-          @initial_users = User.all.to_a
-          @initial_session_count = Session.all.count
-          @initial_sessions = Session.all.to_a
+          set_initial_model_counts(:user, :session)
+          set_initial_model_arrays(:user, :session)
           post :create
         end
 
@@ -47,9 +45,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       context 'sent via json' do
         include_context 'removed_auth_header'
         before(:each) do
-          @initial_user_count = User.all.count
-          @initial_session_count = Session.all.count
-
+          set_initial_model_counts(:user, :session)
           post :create, { user: user_hash }
         end
 
@@ -67,8 +63,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           set_headers({ basic: user_hash })
           post :create
 
-          @initial_user_count = User.all.count
-          @initial_session_count = Session.all.count
+          set_initial_model_counts(:user, :session)
 
           set_headers({ basic: user_hash })
           post :create
@@ -97,12 +92,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       invalid_attributes.each do |hash|
         context "because #{hash.keys.first.to_s} #{hash[:reason]}" do
           before(:each) do
-            @initial_user_count = User.all.count
-            @initial_session_count = Session.all.count
+            set_initial_model_counts(:user, :session)
 
             invalid_param_hash = { hash.keys.first => hash.values.first }
-            # puts "invalid_param_hash: #{invalid_param_hash}"
-            # puts "merged_hash: #{user_hash.merge(invalid_param_hash).inspect}"
             set_headers({ basic: user_hash.merge(invalid_param_hash) })
             post :create
           end

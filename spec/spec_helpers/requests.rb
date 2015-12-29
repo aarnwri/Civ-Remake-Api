@@ -99,6 +99,20 @@ def expect_status (code)
   expect(response.status).to eq(code)
 end
 
+def set_initial_model_counts (*models)
+  models.each do |model|
+    klass = model.to_s.camelize.constantize
+    self.instance_variable_set("@initial_#{model.to_s}_count", klass.all.count)
+  end
+end
+
+def set_initial_model_arrays (*models)
+  models.each do |model|
+    klass = model.to_s.camelize.constantize
+    self.instance_variable_set("@initial_#{model.to_s.pluralize}", klass.all.to_a)
+  end
+end
+
 
 #
 # def require_proper_update (model, params)
