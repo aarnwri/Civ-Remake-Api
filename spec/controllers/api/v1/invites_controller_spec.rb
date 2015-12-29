@@ -16,6 +16,25 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
   let!(:invited_user) { create(:user) }
 
   context 'POST #create' do
+    let!(:valid_invite_params) do
+      return {
+        data: {
+          attributes: {
+            email: invited_user.email,
+            received: false,
+            accepted: false,
+            rejected: false,
+          },
+          relationships: {
+            user: { data: nil },
+            game: { data: { type: "games", id: game.id } } #NOTE: I don't know why type is "games" instead of "game", but this is what ember sends...
+          },
+          type: "invites" #NOTE: I don't know why this is plural either
+        },
+        invite: {} #NOTE: I don't know why this key is even here... (ember...)
+      }
+    end
+
     context 'with valid token' do
       before(:each) { set_headers(token: session.token) }
 
@@ -23,7 +42,7 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         before(:each) do
           set_initial_model_counts(:invite, :game, :user)
           set_initial_model_arrays(:invite)
-          post :create, { invite: { user_id: invited_user.id, game_id: game.id } }
+          post :create, valid_invite_params
         end
 
         include_context 'expect_plus_one_db_count', :invite
@@ -57,7 +76,11 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         context 'because user does not exist' do
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { invite: { user_id: 1000, game_id: game.id } }
+
+            invalid_params = valid_invite_params
+            invalid_params[:data][:attributes][:email] = "does.not@exist.com"
+
+            post :create, invalid_params
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
@@ -68,7 +91,11 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         context 'because game does not exist' do
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { invite: { user_id: invited_user.id, game_id: 1000 } }
+
+            invalid_params = valid_invite_params
+            invalid_params[:data][:relationships][:game][:data][:id] = 1000
+
+            post :create, invalid_params
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
@@ -82,7 +109,11 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
 
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { invite: { user_id: invited_user.id, game_id: wrong_game.id } }
+
+            invalid_params = valid_invite_params
+            invalid_params[:data][:relationships][:game][:data][:id] = wrong_game.id
+
+            post :create, invalid_params
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
@@ -93,7 +124,11 @@ RSpec.describe Api::V1::InvitesController, type: :controller do
         context 'because the user is the game creator' do
           before(:each) do
             set_initial_model_counts(:user, :game, :invite)
-            post :create, { invite: { user_id: user.id, game_id: game.id } }
+
+            invalid_params = valid_invite_params
+            invalid_params[:data][:attributes][:email] = user.email
+
+            post :create, invalid_params
           end
 
           include_context 'expect_same_db_count', :user, :game, :invite
